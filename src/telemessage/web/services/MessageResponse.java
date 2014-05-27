@@ -5,6 +5,7 @@ import telemessage.web.rest.RestClass;
 import telemessage.web.rest.RestField;
 
 /**
+ * TeleMessage Response for sending messages
  * @author Grinfeld Mikhail
  * @since Feb 28, 2010 11:45:17 AM
  */

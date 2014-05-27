@@ -23,7 +23,13 @@ public class FileMessage {
 
     public FileMessage(){}
 
-    public FileMessage(String mimeType, int type, String value, String fileName, String preview) {
+    public FileMessage(String mimeType, String value, String fileName) {
+        this.mimeType = mimeType;
+        this.value = value;
+        this.fileName = fileName;
+    }
+
+    protected FileMessage(String mimeType, int type, String value, String fileName) {
         this.mimeType = mimeType;
         this.type = type;
         this.value = value;

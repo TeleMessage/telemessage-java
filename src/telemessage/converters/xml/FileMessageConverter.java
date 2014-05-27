@@ -26,6 +26,7 @@ public class FileMessageConverter implements XMLConverter<FileMessageConverter.F
             this.fileName = fileMessage.getFileName();
             this.mimeType = fileMessage.getMimeType();
             this.messageIndex = index;
+            this.fileData = new FileData(fileMessage.getValue());
         }
 
         @Element (name = "MESSAGE_INDEX") int messageIndex;

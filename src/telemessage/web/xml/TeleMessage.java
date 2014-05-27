@@ -4,6 +4,8 @@ import telemessage.web.services.AuthenticationDetails;
 import telemessage.web.services.Message;
 
 /**
+ * Wrapper for main Element for XML serialization
+ *
  * @author Grinfeld Mikhail
  * @since 5/26/2014.
  */

@@ -15,8 +15,17 @@ public class Response {
         this.resultDescription = resultDescription;
     }
 
+    /**
+     * returns TeleMessage response code
+     * @return TeleMessage response code
+     */
     public int getResultCode() { return resultCode; }
     public void setResultCode(int resultCode) { this.resultCode = resultCode; }
+
+    /**
+     *
+     * @return TeleMessage textual response
+     */
     public String getResultDescription() { return resultDescription; }
     public void setResultDescription(String resultDescription) { this.resultDescription = resultDescription; }
 }

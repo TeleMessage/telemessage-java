@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions targetNamespace="http://telemessage.com/soap/schemas" xmlns:apachesoap="http://xml.apache.org/xml-soap" xmlns:impl="http://telemessage.com/soap/schemas" xmlns:intf="http://telemessage.com/soap/schemas" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<!--WSDL created by Apache Axis version: 1.4
+Built on Apr 22, 2006 (06:55:48 PDT)-->
+ <wsdl:types>
+  <schema targetNamespace="http://telemessage.com/soap/schemas" xmlns="http://www.w3.org/2001/XMLSchema">
+   <import namespace="http://schemas.xmlsoap.org/soap/encoding/"/>
+   <complexType name="AuthenticationDetails">
+    <sequence>
+     <element name="password" nillable="true" type="xsd:string"/>
+     <element name="username" nillable="true" type="xsd:string"/>
+    </sequence>
+   </complexType>
+   <complexType name="FileMessage">
+    <sequence>
+     <element name="fileName" nillable="true" type="xsd:string"/>
+     <element name="mimeType" nillable="true" type="xsd:string"/>
+     <element name="preview" nillable="true" type="xsd:string"/>
+     <element name="type" type="xsd:int"/>
+     <element name="value" nillable="true" type="xsd:string"/>
+    </sequence>
+   </complexType>
+   <complexType name="ArrayOfFileMessage">
+    <complexContent>
+     <restriction base="soapenc:Array">
+      <attribute ref="soapenc:arrayType" wsdl:arrayType="impl:FileMessage[]"/>
+     </restriction>
+    </complexContent>
+   </complexType>
+   <complexType name="Property">
+    <sequence>
+     <element name="name" nillable="true" type="xsd:string"/>
+     <element name="value" nillable="true" type="xsd:string"/>
+    </sequence>
+   </complexType>
+   <complexType name="ArrayOfProperty">
+    <complexContent>
+     <restriction base="soapenc:Array">
+      <attribute ref="soapenc:arrayType" wsdl:arrayType="impl:Property[]"/>
+     </restriction>
+    </complexContent>
+   </complexType>
+   <complexType name="Recipient">
+    <sequence>
+     <element name="addresType" type="xsd:int"/>
+     <element name="description" nillable="true" type="xsd:string"/>
+     <element name="type" nillable="true" type="xsd:string"/>
+     <element name="value" nillable="true" type="xsd:string"/>
+    </sequence>
+   </complexType>
+   <complexType name="ArrayOfRecipient">
+    <complexContent>
+     <restriction base="soapenc:Array">
+      <attribute ref="soapenc:arrayType" wsdl:arrayType="impl:Recipient[]"/>
+     </restriction>
+    </complexContent>
+   </complexType>
+   <complexType name="Schedule">
+    <sequence>
+     <element name="expiredAt" type="xsd:long"/>
+     <element name="sendAt" type="xsd:long"/>
+    </sequence>
+   </complexType>
+   <complexType name="Message">
+    <sequence>
+     <element name="fileMessages" nillable="true" type="impl:ArrayOfFileMessage"/>
+     <element name="properties" nillable="true" type="impl:ArrayOfProperty"/>
+     <element name="recipients" nillable="true" type="impl:ArrayOfRecipient"/>
+     <element name="schedule" nillable="true" type="impl:Schedule"/>
+     <element name="subject" nillable="true" type="xsd:string"/>
+     <element name="textMessage" nillable="true" type="xsd:string"/>
+    </sequence>
+   </complexType>
+   <complexType name="Response">
+    <sequence>
+     <element name="resultCode" type="xsd:int"/>
+     <element name="resultDescription" nillable="true" type="xsd:string"/>
+    </sequence>
+   </complexType>
+   <complexType name="MessageResponse">
+    <complexContent>
+     <extension base="impl:Response">
+      <sequence>
+       <element name="messageID" type="xsd:long"/>
+       <element name="messageKey" nillable="true" type="xsd:string"/>
+      </sequence>
+     </extension>
+    </complexContent>
+   </complexType>
+   <complexType name="RecipientStatus">
+    <sequence>
+     <element name="description" nillable="true" type="xsd:string"/>
+     <element name="recipient" nillable="true" type="impl:Recipient"/>
+     <element name="status" type="xsd:int"/>
+     <element name="statusDate" type="xsd:long"/>
+    </sequence>
+   </complexType>
+   <complexType name="ArrayOfRecipientStatus">
+    <complexContent>
+     <restriction base="soapenc:Array">
+      <attribute ref="soapenc:arrayType" wsdl:arrayType="impl:RecipientStatus[]"/>
+     </restriction>
+    </complexContent>
+   </complexType>
+   <complexType name="StatusMessageResponse">
+    <complexContent>
+     <extension base="impl:MessageResponse">
+      <sequence>
+       <element name="recipients" nillable="true" type="impl:ArrayOfRecipientStatus"/>
+      </sequence>
+     </extension>
+    </complexContent>
+   </complexType>
+  </schema>
+ </wsdl:types>
+
+   <wsdl:message name="sendMessageRequest">
+
+      <wsdl:part name="loginDetails" type="impl:AuthenticationDetails"/>
+
+      <wsdl:part name="message" type="impl:Message"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="queryStatusRequest">
+
+      <wsdl:part name="loginDetails" type="impl:AuthenticationDetails"/>
+
+      <wsdl:part name="message_id" type="xsd:long"/>
+
+      <wsdl:part name="messageKey" type="xsd:string"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="queryStatusResponse">
+
+      <wsdl:part name="queryStatusReturn" type="impl:StatusMessageResponse"/>
+
+   </wsdl:message>
+
+   <wsdl:message name="sendMessageResponse">
+
+      <wsdl:part name="sendMessageReturn" type="impl:MessageResponse"/>
+
+   </wsdl:message>
+
+   <wsdl:portType name="Sender">
+
+      <wsdl:operation name="sendMessage" parameterOrder="loginDetails message">
+
+         <wsdl:input message="impl:sendMessageRequest" name="sendMessageRequest"/>
+
+         <wsdl:output message="impl:sendMessageResponse" name="sendMessageResponse"/>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="queryStatus" parameterOrder="loginDetails message_id messageKey">
+
+         <wsdl:input message="impl:queryStatusRequest" name="queryStatusRequest"/>
+
+         <wsdl:output message="impl:queryStatusResponse" name="queryStatusResponse"/>
+
+      </wsdl:operation>
+
+   </wsdl:portType>
+
+   <wsdl:binding name="telemessageSoapBinding" type="impl:Sender">
+
+      <wsdlsoap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
+
+      <wsdl:operation name="sendMessage">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="sendMessageRequest">
+
+            <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://telemessage.com/soap/schemas" use="encoded"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="sendMessageResponse">
+
+            <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://telemessage.com/soap/schemas" use="encoded"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="queryStatus">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="queryStatusRequest">
+
+            <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://telemessage.com/soap/schemas" use="encoded"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="queryStatusResponse">
+
+            <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://telemessage.com/soap/schemas" use="encoded"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+   </wsdl:binding>
+
+   <wsdl:service name="SenderService">
+
+      <wsdl:port binding="impl:telemessageSoapBinding" name="telemessage">
+
+         <wsdlsoap:address location="https://secure.telemessage.com/services/telemessage"/>
+
+      </wsdl:port>
+
+   </wsdl:service>
+
+</wsdl:definitions>

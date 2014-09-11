@@ -14,12 +14,14 @@ public class StatusMessageResponse  extends generated.MessageResponse  implement
     }
 
     public StatusMessageResponse(
+           java.lang.Long contentSize,
            int resultCode,
            java.lang.String resultDescription,
            long messageID,
            java.lang.String messageKey,
            generated.RecipientStatus[] recipients) {
         super(
+            contentSize,
             resultCode,
             resultDescription,
             messageID,

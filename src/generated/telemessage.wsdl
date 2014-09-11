@@ -44,6 +44,10 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
     <sequence>
      <element name="addresType" type="xsd:int"/>
      <element name="description" nillable="true" type="xsd:string"/>
+     <element name="groupId" type="xsd:long"/>
+     <element name="groupSenderExcluded" type="xsd:boolean"/>
+     <element name="isGroupSenderExcluded" type="xsd:boolean"/>
+     <element name="rankId" type="xsd:int"/>
      <element name="type" nillable="true" type="xsd:string"/>
      <element name="value" nillable="true" type="xsd:string"/>
     </sequence>
@@ -73,6 +77,7 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
    </complexType>
    <complexType name="Response">
     <sequence>
+     <element name="contentSize" nillable="true" type="xsd:long"/>
      <element name="resultCode" type="xsd:int"/>
      <element name="resultDescription" nillable="true" type="xsd:string"/>
     </sequence>

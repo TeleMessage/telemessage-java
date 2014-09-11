@@ -8,6 +8,8 @@
 package generated;
 
 public class Response  implements java.io.Serializable {
+    private java.lang.Long contentSize;
+
     private int resultCode;
 
     private java.lang.String resultDescription;
@@ -16,10 +18,32 @@ public class Response  implements java.io.Serializable {
     }
 
     public Response(
+           java.lang.Long contentSize,
            int resultCode,
            java.lang.String resultDescription) {
+           this.contentSize = contentSize;
            this.resultCode = resultCode;
            this.resultDescription = resultDescription;
+    }
+
+
+    /**
+     * Gets the contentSize value for this Response.
+     * 
+     * @return contentSize
+     */
+    public java.lang.Long getContentSize() {
+        return contentSize;
+    }
+
+
+    /**
+     * Sets the contentSize value for this Response.
+     * 
+     * @param contentSize
+     */
+    public void setContentSize(java.lang.Long contentSize) {
+        this.contentSize = contentSize;
     }
 
 
@@ -74,6 +98,9 @@ public class Response  implements java.io.Serializable {
         __equalsCalc = obj;
         boolean _equals;
         _equals = true && 
+            ((this.contentSize==null && other.getContentSize()==null) || 
+             (this.contentSize!=null &&
+              this.contentSize.equals(other.getContentSize()))) &&
             this.resultCode == other.getResultCode() &&
             ((this.resultDescription==null && other.getResultDescription()==null) || 
              (this.resultDescription!=null &&
@@ -89,6 +116,9 @@ public class Response  implements java.io.Serializable {
         }
         __hashCodeCalc = true;
         int _hashCode = 1;
+        if (getContentSize() != null) {
+            _hashCode += getContentSize().hashCode();
+        }
         _hashCode += getResultCode();
         if (getResultDescription() != null) {
             _hashCode += getResultDescription().hashCode();
@@ -104,6 +134,12 @@ public class Response  implements java.io.Serializable {
     static {
         typeDesc.setXmlType(new javax.xml.namespace.QName("http://telemessage.com/soap/schemas", "Response"));
         org.apache.axis.description.ElementDesc elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("contentSize");
+        elemField.setXmlName(new javax.xml.namespace.QName("", "contentSize"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "long"));
+        elemField.setNillable(true);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("resultCode");
         elemField.setXmlName(new javax.xml.namespace.QName("", "resultCode"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "int"));

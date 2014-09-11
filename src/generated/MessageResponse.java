@@ -16,11 +16,13 @@ public class MessageResponse  extends generated.Response  implements java.io.Ser
     }
 
     public MessageResponse(
+           java.lang.Long contentSize,
            int resultCode,
            java.lang.String resultDescription,
            long messageID,
            java.lang.String messageKey) {
         super(
+            contentSize,
             resultCode,
             resultDescription);
         this.messageID = messageID;

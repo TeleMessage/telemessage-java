@@ -17,7 +17,9 @@ public class FileMessageExample {
                 Sender s = new SenderServiceLocator().gettelemessage();
                 AuthenticationDetails a = new AuthenticationDetails("xxxxx","xxxxxxx");
                 Message m = new Message();
-                Recipient r = new Recipient(0, "", "FAX", "+1xxxxxxxxxx");
+                Recipient r = new Recipient();
+                r.setValue("+1xxxxxxxxxx");
+                r.setType("FAX");
                 m.setTextMessage("Hello");
                 m.setRecipients(new Recipient[] {r});
                 m.setSubject("1st");

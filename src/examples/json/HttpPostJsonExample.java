@@ -26,13 +26,13 @@ public class HttpPostJsonExample {
         TeleMessage tm = new TeleMessage();
         tm.setSubject("Hello World");
         tm.setText("Rest sample");
-        tm.addRecipient(new Recipient("+1xxxxxxxxxx", "SMS", null));
+        tm.addRecipient(new Recipient("+972548027010", "SMS", null));
         
         try {
             CloseableHttpClient httpclient = HttpClients.createDefault();
             HttpPost httppost = new HttpPost(tm.getSendURL(TeleMessage.Interface.JSON));
             ByteArrayOutputStream by = new ByteArrayOutputStream();
-            tm.writeSend("xxxxxxxxxx", "xxxxxxxx", TeleMessage.Interface.JSON, by);
+            tm.writeSend("grinfeld", "1946", TeleMessage.Interface.JSON, by);
 
             ByteArrayEntity entity = new ByteArrayEntity(by.toByteArray(), ContentType.create("application/json", "UTF-8"));
             httppost.setEntity(entity);

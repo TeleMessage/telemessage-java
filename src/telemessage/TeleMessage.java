@@ -20,10 +20,10 @@ import java.util.*;
  */
 public class TeleMessage {
 
-    private static final String XML_PATH = "https://secure.telemessage.com/partners/xmlMessage.jsp";
-    private static final String JSON_PATH_SEND = "https://secure.telemessage.com/rest/message/send/";
-    private static final String JSON_PATH_STATUS = "https://secure.telemessage.com/rest/message/status/";
-    private static final String SEND_TO_URL_PATH = "https://secure.telemessage.com/jsp/receiveSMS.jsp";
+    private static final String XML_PATH = "http://www.telemessage.com/partners/xmlMessage.jsp";
+    private static final String JSON_PATH_SEND = "http://www.telemessage.com/rest/message/send/";
+    private static final String JSON_PATH_STATUS = "http://www.telemessage.com/rest/message/status/";
+    private static final String SEND_TO_URL_PATH = "http://www.telemessage.com/jsp/receiveSMS.jsp";
 
     /**
      * Supported

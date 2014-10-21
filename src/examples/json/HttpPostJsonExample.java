@@ -8,12 +8,10 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import telemessage.TeleMessage;
-import telemessage.rest.reader.JsonReader;
 import telemessage.web.services.MessageResponse;
 import telemessage.web.services.Recipient;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 
 /**
@@ -26,13 +24,13 @@ public class HttpPostJsonExample {
         TeleMessage tm = new TeleMessage();
         tm.setSubject("Hello World");
         tm.setText("Rest sample");
-        tm.addRecipient(new Recipient("+972548027010", "SMS", null));
+        tm.addRecipient(new Recipient("+1-xxx-xxxxxx", "SMS", null));
         
         try {
             CloseableHttpClient httpclient = HttpClients.createDefault();
             HttpPost httppost = new HttpPost(tm.getSendURL(TeleMessage.Interface.JSON));
             ByteArrayOutputStream by = new ByteArrayOutputStream();
-            tm.writeSend("grinfeld", "1946", TeleMessage.Interface.JSON, by);
+            tm.writeSend("username", "password", TeleMessage.Interface.JSON, by);
 
             ByteArrayEntity entity = new ByteArrayEntity(by.toByteArray(), ContentType.create("application/json", "UTF-8"));
             httppost.setEntity(entity);

@@ -1,6 +1,8 @@
 package telemessage.rest.reader;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -35,12 +37,7 @@ public class JsonReader {
         BufferedReader bf = new BufferedReader(new InputStreamReader(in));
         try {
             Object r = new JsonReader().parse(bf);
-            if (r == null)
-                return null;
-            List<?> l = (List<?>)r;
-            if (l.size() == 0)
-                return null;
-            return clazz.cast(l.get(0));
+            return r == null ? null : clazz.cast(r);
         } catch (InstantiationException e) {
             throw new IllegalArgumentException("Failed to convert Json to Object", e);
         } catch (IllegalAccessException e) {
@@ -54,34 +51,48 @@ public class JsonReader {
     }
 
     private Object parse(BufferedReader bf) throws IOException, IllegalArgumentException, InstantiationException, IllegalAccessException {
-        parse1(bf);
-        if (queue.size() == 1)
-            return queue.getFirst();
+        Pair<Character, Object> resp = parseRecursive(bf);
+        if (resp != null && resp.getRight() != null) {
+            return resp.getRight();
+        }
         return null;
     }
 
-    private Object parse1(BufferedReader bf) throws IOException, IllegalArgumentException, IllegalAccessException, InstantiationException {
+    /**
+     * From this method starts our recursion
+     * @param bf reader
+     * @return returns Pair of last read character and parsed object
+     * @throws IOException
+     * @throws IllegalArgumentException
+     * @throws IllegalAccessException
+     * @throws InstantiationException
+     */
+    private Pair<Character, Object> parseRecursive(BufferedReader bf) throws IOException, IllegalArgumentException, IllegalAccessException, InstantiationException {
         StringBuilder sb = new StringBuilder();
         char c = '\0';
         int r = -1;
         while ( (r = bf.read()) != -1 ) {
             c = (char) r;
-            Object o = parse2(bf, c);
+            Pair<Character, Object> p = parseStructure(bf, c);
+            Object o = p.getRight();
+            c = p .getLeft();
             if (o != null) {
-                return o;
+                return new ImmutablePair<Character, Object>(c, o);
             } else if (c != ELEM_DELIM) {
                 sb.append(c);
             }
         }
-        return null;
+        return new ImmutablePair<Character, Object>(c, null);
     }
 
-    private Object parse3(BufferedReader bf, char c) throws IOException, IllegalArgumentException, IllegalAccessException, InstantiationException {
+    private Pair<Character, Object> parseListInnerElement(BufferedReader bf, char c) throws IOException, IllegalArgumentException, IllegalAccessException, InstantiationException {
         StringBuilder sb = new StringBuilder();
         do {
-            Object o = parse2(bf, c);
+            Pair<Character, Object> p = parseStructure(bf, c);
+            Object o = p.getRight();
+            c = p.getLeft();
             if (o != null) {
-                return o;
+                return p;
             } else if (c != ELEM_DELIM) {
                 if (!(sb.length() == 0 && c == EMPTY_CHAR)) // avoid empty string at the beginning
                     sb.append(c);
@@ -89,7 +100,7 @@ public class JsonReader {
             int r = bf.read();
             c = r != -1 ? (char) r : EMPTY_CHAR;
         } while (bf.ready());
-        return null;
+        return new ImmutablePair<Character, Object>(c, null);
     }
 
     private Object createClass(Map<String, Object> possible) throws IllegalAccessException, InstantiationException {
@@ -150,14 +161,26 @@ public class JsonReader {
             f.set(owner, data);
         } else if (f.getType().isArray() && data != null && data instanceof List) {
             List<?> l = ((List) data);
-            f.set(owner, Array.newInstance(f.getType().getComponentType(), l.size()));
+            Object ar = Array.newInstance(f.getType().getComponentType(), l.size());
+            System.arraycopy(l.toArray(), 0, ar, 0, l.size());
+            f.set(owner, ar);
         } else {
             f.set(owner, f.getType().cast(data));
         }
 
     }
 
-    private Object parse2(BufferedReader bf, char c) throws IOException, IllegalArgumentException, InstantiationException, IllegalAccessException {
+    /**
+     * Method determinate if structure is complicated and tries to parse it into Array, Map, Object (if class parameter exists), String or Number
+     * @param bf reader
+     * @param c current character
+     * @return pair of last read character and parsed object
+     * @throws IOException
+     * @throws IllegalArgumentException
+     * @throws InstantiationException
+     * @throws IllegalAccessException
+     */
+    private Pair<Character, Object> parseStructure(BufferedReader bf, char c) throws IOException, IllegalArgumentException, InstantiationException, IllegalAccessException {
         Map<String, Object> m = null;
         List<Object> l = null;
         StringBuilder sb = new StringBuilder();
@@ -167,59 +190,58 @@ public class JsonReader {
                 m = new HashMap<String, Object>();
                 queue.offer(m);
                 c = parseMap(bf, m);
-                if (c == END_ARRAY || c == END_MAP) {
-                    m = (Map<String, Object>)queue.pollLast();
-                    return createClass(m);
+                if (c == END_MAP) {
+                    m = (Map<String,Object>)queue.pollLast();
+                    if (m.containsKey("class")) {
+                        Object o = createClass(m);
+                        int r = bf.read();
+                        return new ImmutablePair<Character, Object>(r != -1 ? (char)r : c, o);
+                    }
+                    return new ImmutablePair<Character, Object>(c, m);
                 }
                 break;
-            case END_MAP:
-                m = (Map<String, Object>)queue.pollLast();
-                return createClass(m);
             case START_ARRAY:
                 l = new ArrayList<Object>();
                 queue.offer(l);
                 c = parseList(bf, l);
-                if (c == END_ARRAY || c == END_MAP) {
+                if (c == END_ARRAY) {
                     l = (List<Object>)queue.pollLast();
-                    return l;
+                    int r = bf.read();
+                    return new ImmutablePair<Character, Object>(r != -1 ? (char)r : c, l);
                 }
                 break;
-            case END_ARRAY:
-                l = (List<Object>)queue.pollLast();
-                return l;
             case STRING_CHAR:
             case CHAR_CHAR:
                 sb = new StringBuilder();
                 queue.offer(sb);
-                parseString(bf, sb);
+                c = parseString(bf, sb);
                 pn = sb.toString().trim();
                 queue.pollLast();
                 if (pn.equalsIgnoreCase("null"))
-                    return "";
-                return pn;
+                    return new ImmutablePair<Character, Object>(c, "");
+                return new ImmutablePair<Character, Object>(c, pn);
             default:
                 sb = new StringBuilder();
                 sb.append(c);
                 queue.offer(sb);
-                parseNumber(bf, sb);
+                c = parseNumber(bf, sb);
                 pn = sb.toString().trim();
                 queue.pollLast();
                 if (pn.equalsIgnoreCase("null"))
-                    return "";
-                return pn;
+                    return new ImmutablePair<Character, Object>(c, "");
+                return new ImmutablePair<Character, Object>(c, pn);
         }
 
-        return null;
+        return new ImmutablePair<Character, Object>(c, null);
     }
 
     private char parseMap(BufferedReader bf, Map<String, Object> m) throws IOException, IllegalArgumentException, InstantiationException, IllegalAccessException {
-        boolean reachEndOfMap = false;
         char c = SPACE_CHAR;
         int r = -1;
-        while ( (r = bf.read()) != -1 && !reachEndOfMap) {
+        while ( (r = bf.read()) != -1) {
             c = (char) r;
-            if (c == END_MAP || c == END_ARRAY) {
-                reachEndOfMap = true;
+            if (c == END_MAP) {
+                return c;
             } else {
                 StringBuilder sb = new StringBuilder();
                 // searching key
@@ -235,8 +257,14 @@ public class JsonReader {
                 if (key.endsWith(String.valueOf(CHAR_CHAR)) || key.endsWith(String.valueOf(STRING_CHAR)))
                     key = key.substring(0, key.length() - 1);
 
-                Object o = parse1(bf);
+                Pair<Character, Object> p = parseRecursive(bf);
+                Object o = p.getRight();
+                c = p.getLeft();
                 m.put(key, o);
+
+                if (c == END_MAP) {
+                    return c;
+                }
             }
         }
 
@@ -245,17 +273,21 @@ public class JsonReader {
 
     private char parseList(BufferedReader bf, List<Object> l) throws IOException, IllegalArgumentException, InstantiationException, IllegalAccessException {
         char c = SPACE_CHAR;
-        boolean reachEndOfMap = false;
         int r = -1;
-        while ((r = bf.read()) != -1 && !reachEndOfMap) {
+        while ((r = bf.read()) != -1) {
             c = (char) r;
-            if (c == END_ARRAY) {
-                reachEndOfMap = true;
-            } else if (c == ELEM_DELIM) {
+            if (c == END_MAP) {
+                return c;
+            } else if (c == ELEM_DELIM || c == VALUE_DELIM) {
                 // do nothing
             } else {
-                Object o = parse3(bf, c);
+                Pair<Character, Object> p = parseListInnerElement(bf, c);
+                Object o = p.getRight();
+                c = p.getLeft();
                 l.add(o);
+                if (c == END_ARRAY) {
+                    return c;
+                }
             }
         }
 

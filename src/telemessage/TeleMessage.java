@@ -15,6 +15,7 @@ import java.util.*;
 /**
  * This class represents container for message to be send via TeleMessage.
  * Class wraps message and converts it to chosen format, i.e. XML, JSON or URL
+ * Receiving message is possible only for XML and JSON
  * @author Grinfeld Mikhail
  * @since 5/26/2014.
  */
@@ -26,12 +27,21 @@ public class TeleMessage {
     private static final String SEND_TO_URL_PATH = "https://secure.telemessage.com/jsp/receiveSMS.jsp";
 
     /**
-     * Supported
+     * Supported Interfaces
      */
     public enum Interface {
+        /**
+         * XML API
+         */
         XML(XML_PATH, XML_PATH),
+        /**
+         * REST API
+         */
         JSON(JSON_PATH_SEND, JSON_PATH_STATUS),
-        SEND_TO_URL(SEND_TO_URL_PATH,null);
+        /**
+         * HTTP API
+         */
+        SEND_TO_URL(SEND_TO_URL_PATH, null);
 
         private String send;
         private String status;
@@ -76,36 +86,69 @@ public class TeleMessage {
         return this;
     }
 
+    /**
+     * Adds recipient to TeleMessage
+     * @param r recipient to send message to
+     * @return TeleMessage
+     */
     public TeleMessage addRecipient(Recipient r) {
         recipients.add(r);
         return this;
     }
 
+    /**
+     * Removes recipient from TeleMessage
+     * @param r recipient to remove
+     * @return TeleMessage
+     */
     public TeleMessage removeRecipient(Recipient r) {
         recipients.remove(r);
         return this;
     }
 
+    /**
+     * Adds list of recipients to TeleMessage
+     * @param rs List of recipients to be added
+     * @return TeleMessage
+     */
     public TeleMessage addRecipients(List<Recipient> rs) {
         recipients.addAll(rs);
         return this;
     }
 
+    /**
+     * Clears recipients
+     * @return TeleMessage
+     */
     public TeleMessage clearRecipients() {
         recipients.clear();
         return this;
     }
 
-    public TeleMessage addFileMessage(FileMessage r) {
-        fileMessages.put(r.getFileName(), r);
+    /**
+     * Adds file message to be sent
+     * @param f file message to be sent
+     * @return TeleMessage
+     */
+    public TeleMessage addFileMessage(FileMessage f) {
+        fileMessages.put(f.getFileName(), f);
         return this;
     }
 
+    /**
+     * Removes file from TeleMessage
+     * @param r file message to be removed
+     * @return TeleMessage
+     */
     public TeleMessage removeFileMessage(FileMessage r) {
         fileMessages.remove(r.getFileName());
         return this;
     }
 
+    /**
+     * Clears file messages
+     * @return TeleMessage
+     */
     public TeleMessage clearFileMessages() {
         fileMessages.clear();
         return this;
@@ -131,7 +174,7 @@ public class TeleMessage {
     }
 
     /**
-     * Prepares message to be sent. There are 3 options (indicated by anInterface {@link Interface} parameter):
+     * Prepares message request to be sent. There are 3 options (indicated by anInterface {@link Interface} parameter):
      * 1. XML - writes xml into OutputStream out
      * 2. JSON - writes json into
      * 3. SEND_TO_URL - populate and return result with Map of parameters to be sent over URL. This options doesn't support multi recipients and files
@@ -168,23 +211,33 @@ public class TeleMessage {
     }
 
     /**
-     * Reads TeleMessage immediate response after sending message
-     * @param response from TeleMessage
-     * @param anInterface interface to read response from
-     * @return TeleMessage immediate response after sending message
-     * @throws Exception while parsing response error
+     * Prepares status request to be sent. There are 2 options (indicated by anInterface {@link Interface} parameter):
+     * 1. XML - writes xml into OutputStream out
+     * 2. JSON - writes json into
+     * @param username user's username to get status for
+     * @param password user's password to get status for
+     * @param messageID message id, received by sending message
+     * @param messageKey message key, received by sending message
+     * @param anInterface interface to use (REST or XML)
+     * @param out output stream to write result in
+     * @return Result if TeleMessage server responded to request
+     * @throws IOException
+     * @throws IllegalArgumentException
      */
-    public MessageResponse readSendResponse(String response, Interface anInterface) throws Exception {
-        MessageResponse resp = null;
+    public Result writeQueryStatus(String username, String password, long messageID, String messageKey, Interface anInterface, OutputStream out) throws IOException, IllegalArgumentException {
+        Result res = new Result(false);
+        AuthenticationDetails auth = new AuthenticationDetails(username, password);
         switch (anInterface) {
             case XML:
-                return readXMLSendResponse(response);
+                writeQueryStatusXML(messageID, messageKey, out);
+                res.success = true;
+                break;
             case JSON:
-                return JsonReader.read(new ByteArrayInputStream(response.getBytes()), MessageResponse.class);
-            case SEND_TO_URL:
+                writeQueryStatusJson(auth, messageID, messageKey, out);
+                res.success = true;
                 break;
         }
-        return resp;
+        return res;
     }
 
     /**
@@ -194,25 +247,105 @@ public class TeleMessage {
      * @return TeleMessage immediate response after sending message
      * @throws Exception while parsing response error
      */
-    public MessageResponse readSendResponse(InputStream response, Interface anInterface) throws Exception {
-        MessageResponse resp = null;
+    public MessageResponse readSendResponse(String response, Interface anInterface) throws Exception {
         switch (anInterface) {
             case XML:
                 return readXMLSendResponse(response);
             case JSON:
-                return JsonReader.read(response, MessageResponse.class);
+                return readFirstFromResponseArray(new ByteArrayInputStream(response.getBytes()), MessageResponse.class);
             case SEND_TO_URL:
                 break;
         }
-        return resp;
+        return null;
     }
 
-    public MessageResponse readXMLSendResponse(String response) throws Exception {
+
+
+    /**
+     * Reads TeleMessage immediate response after sending message
+     * @param response from TeleMessage
+     * @param anInterface interface to read response from
+     * @return TeleMessage immediate response after sending message
+     * @throws Exception while parsing response error
+     */
+    public MessageResponse readSendResponse(InputStream response, Interface anInterface) throws Exception {
+        switch (anInterface) {
+            case XML:
+                return readXMLSendResponse(response);
+            case JSON:
+                return readFirstFromResponseArray(response, MessageResponse.class);
+            case SEND_TO_URL:
+                break;
+        }
+        return null;
+    }
+
+    private MessageResponse readXMLSendResponse(String response) throws Exception {
         return (new Persister().read(TeleMessageResponse.class, response)).convert();
     }
 
-    public MessageResponse readXMLSendResponse(InputStream response) throws Exception {
+    private MessageResponse readXMLSendResponse(InputStream response) throws Exception {
         return (new Persister().read(TeleMessageResponse.class, response)).convert();
+    }
+
+
+    /**
+     * Reads TeleMessage response after querying status
+     * @param response from TeleMessage
+     * @param anInterface interface to read response from
+     * @return TeleMessage immediate response after sending message
+     * @throws Exception while parsing response error
+     */
+    public MessageResponse readQueryStatusResponse(String response, Interface anInterface) throws Exception {
+        switch (anInterface) {
+            case XML:
+                return readXMLQueryStatusResponse(response);
+            case JSON:
+                return readFirstFromResponseArray(new ByteArrayInputStream(response.getBytes()), StatusMessageResponse.class);
+            case SEND_TO_URL:
+                break;
+        }
+        return null;
+    }
+
+    /**
+     * Reads TeleMessage response after querying status
+     * @param response from TeleMessage
+     * @param anInterface interface to read response from
+     * @return TeleMessage response after sending message
+     * @throws Exception while parsing response error
+     */
+    public StatusMessageResponse readQueryStatusResponse(InputStream response, Interface anInterface) throws Exception {
+        switch (anInterface) {
+            case XML:
+                return readXMLQueryStatusResponse(response);
+            case JSON:
+                return new StatusMessageResponse(readFirstFromResponseArray(response, Response.class));
+            case SEND_TO_URL:
+                break;
+        }
+        return null;
+    }
+
+    private <T> T readFirstFromResponseArray(InputStream response, Class<T> clazz) throws IOException {
+        List<? extends T> ls = readArray(response, clazz);
+        return ls == null ? null : ls.get(0);
+    }
+
+    private <T> List<? extends T> readArray(InputStream response, Class<? extends T> clazz) throws IOException {
+        List<?> ls = JsonReader.read(response, List.class);
+        if (ls != null && ls.size() > 0 && clazz.isAssignableFrom(ls.get(0).getClass())) {
+            return (List<? extends T>)ls;
+        }
+        return null;
+    }
+
+    private StatusMessageResponse readXMLQueryStatusResponse(String response) throws Exception {
+        return (StatusMessageResponse)(new Persister().read(TeleMessageResponse.class, response)).convert();
+    }
+
+    private StatusMessageResponse readXMLQueryStatusResponse(InputStream response) throws Exception {
+        return (StatusMessageResponse)(new Persister().read(TeleMessageResponse.class, response)).convert();
     }
 
     /**
@@ -223,7 +356,6 @@ public class TeleMessage {
         recipients = new ArrayList<Recipient>();
         fileMessages = new HashMap<String, FileMessage>();
     }
-
 
     private void validateBeforeSend(AuthenticationDetails auth) throws IllegalArgumentException {
         if (auth == null)
@@ -255,9 +387,19 @@ public class TeleMessage {
 
     }
 
+    private void writeQueryStatusXML(long messageID, String messageKey, OutputStream out) throws IOException {
+        try {
+            new Persister().write(new MessageConverter().convert(messageID, messageKey), out);
+        } catch (IOException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new IOException(e);
+        }
+    }
+
     private void writeSendXML(AuthenticationDetails auth, OutputStream out) throws IOException {
         try {
-            new Persister().write(new MessageConverter().convert(new telemessage.web.xml.TeleMessage(auth, message)), out);
+            new Persister().write(new MessageConverter().convert(auth, message), out);
         } catch (IOException e) {
             throw e;
         } catch (Exception e) {
@@ -268,6 +410,18 @@ public class TeleMessage {
     private void writeSendJson(AuthenticationDetails auth, OutputStream out) throws IOException {
         try {
             Object tr = new Object[] {auth, message};
+            TransformerFactory.get(tr).transform(tr, out);
+        } catch (IOException e) {
+            throw e;
+        } catch (IllegalAccessException e) {
+            throw new IOException(e);
+        }
+    }
+
+
+    private void writeQueryStatusJson(AuthenticationDetails auth, long messageID, String messageKey, OutputStream out) throws IOException {
+        try {
+            Object tr = new Object[] {auth, messageID, messageKey};
             TransformerFactory.get(tr).transform(tr, out);
         } catch (IOException e) {
             throw e;

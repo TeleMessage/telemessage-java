@@ -15,6 +15,11 @@ public class Response {
         this.resultDescription = resultDescription;
     }
 
+    protected void init(int resultCode, String resultDescription) {
+        this.resultCode = resultCode;
+        this.resultDescription = resultDescription;
+    }
+
     /**
      * returns TeleMessage response code
      * @return TeleMessage response code

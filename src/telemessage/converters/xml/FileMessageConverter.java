@@ -4,16 +4,19 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.simpleframework.xml.Element;
 import telemessage.web.services.FileMessage;
 
-public class FileMessageConverter implements XMLConverter<FileMessageConverter.FILE_MESSAGE, FileMessage> {
+public class FileMessageConverter implements XMLConverter<FileMessageConverter.FILE_MESSAGE> {
 
 
     @Override
     /**
      * Expects first element to be integer
      */
-    public FILE_MESSAGE convert(FileMessage fileMessage, Object...args) {
-        if (fileMessage != null && !ArrayUtils.isEmpty(args))
-            return new FILE_MESSAGE(fileMessage, (Integer)args[0]);
+    public FILE_MESSAGE convert(Object...args) {
+        if (ArrayUtils.isEmpty(args) || args.length < 2)
+            return null;
+        FileMessage fileMessage = (FileMessage) args[0];
+        if (fileMessage != null)
+            return new FILE_MESSAGE(fileMessage, (Integer)args[1]);
         return null;
     }
 

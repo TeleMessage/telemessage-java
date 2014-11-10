@@ -4,15 +4,18 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.simpleframework.xml.Element;
 import telemessage.web.services.Property;
 
-public class PropertyConverter implements XMLConverter<PropertyConverter.PropertyMessage, Property> {
+public class PropertyConverter implements XMLConverter<PropertyConverter.PropertyMessage> {
 
     @Override
     /**
      * Expects first element to be integer
      */
-    public PropertyMessage convert(Property property, Object...args) {
-        if (property != null && !ArrayUtils.isEmpty(args))
-            return new PropertyMessage((Integer)args[0], property.getName(), property.getValue());
+    public PropertyMessage convert(Object...args) {
+        if (ArrayUtils.isEmpty(args) || args.length < 2)
+            return null;
+        Property property = (Property)args[0];
+        if (property != null)
+            return new PropertyMessage((Integer)args[1], property.getName(), property.getValue());
         return null;
     }
 

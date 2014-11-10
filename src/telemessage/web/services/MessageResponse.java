@@ -21,6 +21,16 @@ public class MessageResponse extends Response {
         this.messageKey = messageKey;
     }
 
+    public MessageResponse(Response response) {
+        super(response.getResultCode(), response.getResultDescription());
+    }
+
+    protected void init(int resultCode, String resultDescription, long messageID, String messageKey) {
+        super.init(resultCode, resultDescription);
+        this.messageID = messageID;
+        this.messageKey = messageKey;
+    }
+
     public MessageResponse(int resultCode, String resultDescription) {
         this(resultCode, resultDescription, -1, null);
     }

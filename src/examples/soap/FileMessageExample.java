@@ -9,13 +9,12 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.rmi.RemoteException;
-import java.util.Date;
 
 public class FileMessageExample {
     public static void main(String...args) {
             try {
                 Sender s = new SenderServiceLocator().gettelemessage();
-                AuthenticationDetails a = new AuthenticationDetails("xxxxx","xxxxxxx");
+                AuthenticationDetails a = new AuthenticationDetails("password","john_donne");
                 Message m = new Message();
                 Recipient r = new Recipient();
                 r.setValue("+1xxxxxxxxxx");
@@ -30,13 +29,7 @@ public class FileMessageExample {
                         new FileMessage(f.getName(), "image/png", "", 0, Base64.encodeBase64String(org.apache.commons.io.IOUtils.toByteArray(fi)))
                 });
                 MessageResponse rs = s.sendMessage(a, m);
-
                 System.out.println("Message id: " + rs.getMessageID() + ", key: " + rs.getMessageKey() + ", result status: " + rs.getResultCode());
-                StatusMessageResponse sr = s.queryStatus(a, rs.getMessageID(), rs.getMessageKey());
-                System.out.println("result status: " + sr.getResultCode());
-                for (RecipientStatus rt : sr.getRecipients()) {
-                    System.out.println("Date: " + (new Date(rt.getStatusDate())) + ", message status: " + rt.getStatus() + ", result status: " + rs.getResultCode());
-                }
             } catch (ServiceException e) {
                 e.printStackTrace();
             } catch (RemoteException e) {

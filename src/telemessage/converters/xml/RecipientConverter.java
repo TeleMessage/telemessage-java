@@ -1,14 +1,18 @@
 package telemessage.converters.xml;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
 import telemessage.web.services.Recipient;
 
-public class RecipientConverter implements XMLConverter<RecipientConverter.DeviceInformation, Recipient> {
+public class RecipientConverter implements XMLConverter<RecipientConverter.DeviceInformation> {
 
     @Override
-    public DeviceInformation convert(Recipient recipient, Object... args) {
+    public DeviceInformation convert(Object... args) {
+        if (ArrayUtils.isEmpty(args) || args.length < 1)
+            return null;
+        Recipient recipient = (Recipient)args[0];
         if (recipient != null) {
             return new DeviceInformation(recipient.getType().name(), recipient.getValue(), recipient.getDescription());
         }

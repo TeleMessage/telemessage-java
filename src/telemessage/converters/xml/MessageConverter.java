@@ -12,12 +12,22 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class MessageConverter implements XMLConverter<MessageConverter.TeleMessage, telemessage.web.xml.TeleMessage> {
+public class MessageConverter implements XMLConverter<telemessage.converters.xml.MessageConverter.TeleMessage> {
 
     @Override
-    public TeleMessage convert(telemessage.web.xml.TeleMessage tm, Object... args) {
-        if (tm != null) {
-            return new TeleMessage(new TeleMessage.TelemessageContent(tm.getMessage(), tm.getAuthenticationDetails()));
+    public TeleMessage convert(Object... args) {
+        if (ArrayUtils.isEmpty(args) || args.length < 2)
+            return null;
+        if (args[0] instanceof AuthenticationDetails && args[1] instanceof Message) {
+            AuthenticationDetails auth = (AuthenticationDetails)args[0];
+            Message m = (Message)args[1];
+            return new TeleMessage(new TeleMessage.TelemessageContent(m, auth));
+        }
+        if (args[0] instanceof Long && args[1] instanceof String) {
+            Long messageId = (Long)args[0];
+            String messageKey = (String)args[1];
+            Boolean showReplies = args.length > 2 ? (Boolean)args[2] : null;
+            return new TeleMessage(new TeleMessage.TelemessageContent(messageId, messageKey, showReplies));
         }
         return null;
     }
@@ -34,13 +44,34 @@ public class MessageConverter implements XMLConverter<MessageConverter.TeleMessa
 
 
         private static class TelemessageContent {
-            @Element (name = "MESSAGE") MESSAGE message;
+            @Element (name = "MESSAGE", required = false) MESSAGE message;
+            @Element (name = "MESSAGE_STATUS_QUERY", required = false) MessageStatusQuery statusQuery;
 
             TelemessageContent() {
             }
 
             private TelemessageContent(Message message, AuthenticationDetails auth) {
                 this.message = new MESSAGE(message, auth);
+            }
+
+            private TelemessageContent(Long messageId, String messageKey, Boolean showReplies) {
+                this.statusQuery = new MessageStatusQuery(messageId, messageKey, showReplies);
+            }
+
+            private static class MessageStatusQuery {
+
+                private MessageStatusQuery() {
+                }
+
+                private MessageStatusQuery(long messageId, String messageKey, Boolean showReplies) {
+                    this.messageId = messageId;
+                    this.messageKey = messageKey;
+                    this.showReplies = showReplies != null ? showReplies : false;
+                }
+
+                @Element(name = "MESSAGE_ID") long messageId;
+                @Element(name = "MESSAGE_KEY") String messageKey;
+                @Element(name = "SHOW_REPLIES", required = false) boolean showReplies;
             }
 
             private static class MESSAGE {
@@ -147,8 +178,6 @@ public class MessageConverter implements XMLConverter<MessageConverter.TeleMessa
                                 }
                             }
                         }
-
-
                     }
                 }
             }

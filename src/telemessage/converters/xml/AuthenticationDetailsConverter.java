@@ -1,10 +1,14 @@
 package telemessage.converters.xml;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.simpleframework.xml.Element;
 import telemessage.web.services.AuthenticationDetails;
 
-public class AuthenticationDetailsConverter implements XMLConverter<AuthenticationDetailsConverter.UserFrom, AuthenticationDetails> {
-    public UserFrom convert(AuthenticationDetails authenticationDetails, Object...args) {
+public class AuthenticationDetailsConverter implements XMLConverter<AuthenticationDetailsConverter.UserFrom> {
+    public UserFrom convert(Object...args) {
+        if (ArrayUtils.isEmpty(args) || args.length < 1)
+            return null;
+        AuthenticationDetails authenticationDetails = (AuthenticationDetails)args[0];
         if (authenticationDetails != null)
             return new UserFrom(authenticationDetails);
         return null;

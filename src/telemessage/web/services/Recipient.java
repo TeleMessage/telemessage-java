@@ -11,13 +11,27 @@ import telemessage.web.rest.RestField;
 public class Recipient {
 
     public enum Type {
-        MOBILE,
-        BUSINESS_PHONE,
-        HOME_PHONE,
-        EMAIL,
-        SMS,
-        FAX,
-        MMS
+        MOBILE (10),
+        BUSINESS_PHONE (20),
+        HOME_PHONE (30),
+        EMAIL (40),
+        SMS (60),
+        FAX (80),
+        MMS (110);
+
+        int id;
+
+        Type(int id) {
+            this.id = id;
+        }
+
+        public static String name(int id) {
+            for (Type d : Type.values()) {
+                if (id == d.id)
+                    return d.name();
+            }
+            return null;
+        }
     }
 
     @RestField private String value;

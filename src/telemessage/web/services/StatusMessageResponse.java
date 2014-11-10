@@ -11,16 +11,39 @@ import telemessage.web.rest.RestField;
 public class StatusMessageResponse extends MessageResponse {
     @RestField private RecipientStatus[] recipients;
 
+    public StatusMessageResponse() {}
+
     public StatusMessageResponse(int resultCode, String resultDescription, long messageID, String messageKey) {
-        super(resultCode, resultDescription, messageID, messageKey);
+        init(resultCode, resultDescription, messageID, messageKey);
     }
 
     public StatusMessageResponse(int resultCode, String resultDescription, long messageID, String messageKey, RecipientStatus recipients[]) {
-        super(resultCode, resultDescription, messageID, messageKey);
+        init(resultCode, resultDescription, messageID, messageKey, recipients);
+    }
+
+    public StatusMessageResponse(Response response) {
+        super(response);
+        if (response instanceof StatusMessageResponse)
+            init((StatusMessageResponse)response);
+        else if (response instanceof MessageResponse)
+            init((MessageResponse)response);
+
+    }
+
+    public void init(int resultCode, String resultDescription, long messageID, String messageKey, RecipientStatus recipients[]) {
+        init(resultCode, resultDescription, messageID, messageKey);
         this.recipients = recipients;
     }
 
-    public StatusMessageResponse() {}
+    public void init(StatusMessageResponse response) {
+        init(response.getResultCode(), response.getResultDescription(), response.getMessageID(), response.getMessageKey(), response.getRecipients());
+    }
+
+
+    public void init(MessageResponse response) {
+        init(response.getResultCode(), response.getResultDescription(), response.getMessageID(), response.getMessageKey(), null);
+    }
+
 
     public RecipientStatus[] getRecipients() { return recipients; }
     public void setRecipients(RecipientStatus[] recipients) { this.recipients = recipients; }

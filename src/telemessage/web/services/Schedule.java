@@ -1,16 +1,17 @@
 package telemessage.web.services;
 
-import telemessage.web.rest.RestClass;
-import telemessage.web.rest.RestField;
+
+import com.mikerusoft.jsonable.annotations.JsonClass;
+import com.mikerusoft.jsonable.annotations.JsonField;
 
 /**
  * @author Grinfeld Mikhail
  * @since Feb 28, 2010 5:54:25 PM
  */
-@RestClass
+@JsonClass
 public class Schedule {
-    @RestField private long sendAt;
-    @RestField private long expiredAt;
+    @JsonField private long sendAt;
+    @JsonField private long expiredAt;
 
     public Schedule() {
     }

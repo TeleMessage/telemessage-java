@@ -1,18 +1,19 @@
 package telemessage.web.services;
 
-import telemessage.web.rest.RestClass;
-import telemessage.web.rest.RestField;
+
+import com.mikerusoft.jsonable.annotations.JsonClass;
+import com.mikerusoft.jsonable.annotations.JsonField;
 
 /**
  * @author Grinfeld Mikhail
  * @since Mar 1, 2010 2:53:05 PM
  */
-@RestClass
+@JsonClass
 public class RecipientStatus {
-    @RestField private Recipient recipient;
-    @RestField private int status;
-    @RestField private String description;
-    @RestField private long statusDate;
+    @JsonField private Recipient recipient;
+    @JsonField private int status;
+    @JsonField private String description;
+    @JsonField private long statusDate;
 
     public RecipientStatus() {}
 

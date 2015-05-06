@@ -35,7 +35,7 @@ public class HttpPostFileJsonExample {
             CloseableHttpClient httpclient = HttpClients.createDefault();
             HttpPost httppost = new HttpPost(tm.getSendURL(TeleMessage.Interface.JSON));
             ByteArrayOutputStream by = new ByteArrayOutputStream();
-            tm.writeSend("xxxxxxxxx", "xxxxxxx", TeleMessage.Interface.JSON, by);
+            tm.writeSend("john_donne", "password", TeleMessage.Interface.JSON, by);
 
             ByteArrayEntity entity = new ByteArrayEntity(by.toByteArray(), ContentType.create("application/json", "UTF-8"));
             httppost.setEntity(entity);

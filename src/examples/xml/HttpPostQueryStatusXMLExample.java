@@ -27,7 +27,7 @@ public class HttpPostQueryStatusXMLExample {
             HttpPost httppost = new HttpPost(tm.getStatusURL(TeleMessage.Interface.XML));
             ByteArrayOutputStream by = new ByteArrayOutputStream();
             // message id and message key received by sending message
-            tm.writeQueryStatus("john_donne", "password", 35738123, "731815630040821905088475443969", TeleMessage.Interface.XML, by);
+            tm.writeQueryStatus("john_donne", "password", 6698, "404640224957515620220868271364", TeleMessage.Interface.XML, by);
 
             ByteArrayEntity entity = new ByteArrayEntity(by.toByteArray(), ContentType.create("application/json", "UTF-8"));
             httppost.setEntity(entity);

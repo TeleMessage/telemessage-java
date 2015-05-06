@@ -1,15 +1,17 @@
 package telemessage.web.services;
 
-import telemessage.web.rest.RestClass;
-import telemessage.web.rest.RestField;
+
+import com.mikerusoft.jsonable.annotations.JsonClass;
+import com.mikerusoft.jsonable.annotations.JsonField;
 
 /**
  * @author Grinfeld Mikhail
  * @since Mar 1, 2010 2:48:39 PM
  */
-@RestClass
+@JsonClass
 public class StatusMessageResponse extends MessageResponse {
-    @RestField private RecipientStatus[] recipients;
+    @JsonField
+    private RecipientStatus[] recipients;
 
     public StatusMessageResponse() {}
 

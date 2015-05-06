@@ -34,7 +34,7 @@ public class HttpPostFileXMLExample {
             CloseableHttpClient httpclient = HttpClients.createDefault();
             HttpPost httppost = new HttpPost(tm.getSendURL(TeleMessage.Interface.XML));
             ByteArrayOutputStream by = new ByteArrayOutputStream();
-            tm.writeSend("xxxxxxx", "xxxxxx", TeleMessage.Interface.XML, by);
+            tm.writeSend("john_donne", "password", TeleMessage.Interface.XML, by);
 
             ByteArrayEntity entity = new ByteArrayEntity(by.toByteArray(), ContentType.create("text/xml", "UTF-8"));
             httppost.setEntity(entity);

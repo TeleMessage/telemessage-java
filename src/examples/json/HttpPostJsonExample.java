@@ -24,7 +24,7 @@ public class HttpPostJsonExample {
         TeleMessage tm = new TeleMessage();
         tm.setSubject("Hello World");
         tm.setText("Rest sample");
-        tm.addRecipient(new Recipient("+1xxxxxxxxxx", "SMS", null));
+        tm.addRecipient(new Recipient("+1xxxxxxxxx", "SMS", null));
         
         try {
             CloseableHttpClient httpclient = HttpClients.createDefault();

@@ -1,15 +1,15 @@
 package telemessage;
 
+import com.mikerusoft.jsonable.parser.JsonWriter;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.simpleframework.xml.core.Persister;
 import telemessage.converters.xml.MessageConverter;
-import telemessage.rest.reader.JsonReader;
-import telemessage.rest.transform.TransformerFactory;
 import telemessage.web.services.*;
 import telemessage.web.xml.TeleMessageResponse;
 
 import java.io.*;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 /**
@@ -21,7 +21,7 @@ import java.util.*;
  */
 public class TeleMessage {
 
-    private static final String XML_PATH = "https://secure.telemessage.com/partners/xmlMessage.jsp";
+    private static final String XML_PATH = "https://rest.telemessage.com/partners/xmlMessage.jsp";
     private static final String JSON_PATH_SEND = "https://rest.telemessage.com/rest/message/send/";
     private static final String JSON_PATH_STATUS = "https://rest.telemessage.com/rest/message/status/";
     private static final String SEND_TO_URL_PATH = "https://secure.telemessage.com/jsp/receiveSMS.jsp";
@@ -252,7 +252,7 @@ public class TeleMessage {
             case XML:
                 return readXMLSendResponse(response);
             case JSON:
-                return readFirstFromResponseArray(new ByteArrayInputStream(response.getBytes()), MessageResponse.class);
+                return readJsonResponse(new ByteArrayInputStream(response.getBytes()), MessageResponse.class);
             case SEND_TO_URL:
                 break;
         }
@@ -273,7 +273,7 @@ public class TeleMessage {
             case XML:
                 return readXMLSendResponse(response);
             case JSON:
-                return readFirstFromResponseArray(response, MessageResponse.class);
+                return readJsonResponse(response, MessageResponse.class);
             case SEND_TO_URL:
                 break;
         }
@@ -301,7 +301,7 @@ public class TeleMessage {
             case XML:
                 return readXMLQueryStatusResponse(response);
             case JSON:
-                return readFirstFromResponseArray(new ByteArrayInputStream(response.getBytes()), StatusMessageResponse.class);
+                return readJsonResponse(new ByteArrayInputStream(response.getBytes()), StatusMessageResponse.class);
             case SEND_TO_URL:
                 break;
         }
@@ -320,24 +320,27 @@ public class TeleMessage {
             case XML:
                 return readXMLQueryStatusResponse(response);
             case JSON:
-                return new StatusMessageResponse(readFirstFromResponseArray(response, Response.class));
+                return new StatusMessageResponse(readJsonResponse(response, Response.class));
             case SEND_TO_URL:
                 break;
         }
         return null;
     }
 
-    private <T> T readFirstFromResponseArray(InputStream response, Class<T> clazz) throws IOException {
-        List<? extends T> ls = readArray(response, clazz);
-        return ls == null ? null : ls.get(0);
+    private <T> T readJsonResponse(InputStream response, Class<T> clazz) throws IOException {
+        return readJsonResponseFromArray(response, clazz);
     }
 
-    private <T> List<? extends T> readArray(InputStream response, Class<? extends T> clazz) throws IOException {
-        List<?> ls = JsonReader.read(response, List.class);
-        if (ls != null && ls.size() > 0 && clazz.isAssignableFrom(ls.get(0).getClass())) {
-            return (List<? extends T>)ls;
-        }
-        return null;
+    private <T> T readJsonResponseFromArray(InputStream response, Class<T> clazz) throws IOException {
+        Object obj = com.mikerusoft.jsonable.parser.JsonReader.read(response);
+        if (obj == null)
+            return null;
+        if (obj.getClass().isArray())
+            return (T)Arrays.asList(obj).get(0);
+
+        if (List.class.isAssignableFrom(obj.getClass()))
+            return (T)((List)obj).get(0);
+        throw new IllegalArgumentException("Invalid response");
     }
 
     private StatusMessageResponse readXMLQueryStatusResponse(String response) throws Exception {
@@ -410,10 +413,10 @@ public class TeleMessage {
     private void writeSendJson(AuthenticationDetails auth, OutputStream out) throws IOException {
         try {
             Object tr = new Object[] {auth, message};
-            TransformerFactory.get(tr).transform(tr, out);
-        } catch (IOException e) {
-            throw e;
+            JsonWriter.write(tr, out);
         } catch (IllegalAccessException e) {
+            throw new IOException(e);
+        } catch (InvocationTargetException e) {
             throw new IOException(e);
         }
     }
@@ -422,10 +425,10 @@ public class TeleMessage {
     private void writeQueryStatusJson(AuthenticationDetails auth, long messageID, String messageKey, OutputStream out) throws IOException {
         try {
             Object tr = new Object[] {auth, messageID, messageKey};
-            TransformerFactory.get(tr).transform(tr, out);
-        } catch (IOException e) {
-            throw e;
+            JsonWriter.write(tr, out);
         } catch (IllegalAccessException e) {
+            throw new IOException(e);
+        } catch (InvocationTargetException e) {
             throw new IOException(e);
         }
     }

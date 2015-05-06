@@ -112,10 +112,11 @@ public class TeleMessageResponse {
         }
 
         static class Device {
+            @Element (name = "ID", required = false) String id;
             @Element (name = "TYPE") int type;
             @Element (name = "VALUE") String value;
             @Element (name = "STATUS") int status;
-            @Element (name = "DESCRIPTION") String description;
+            @Element (name = "DESCRIPTION", required = false) String description;
             @Element (name = "STATUS_DATE") String status_date;
             @Element (name = "ANSWER", required = false) String answer;
         }

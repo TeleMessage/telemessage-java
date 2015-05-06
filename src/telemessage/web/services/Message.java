@@ -1,20 +1,21 @@
 package telemessage.web.services;
 
-import telemessage.web.rest.RestClass;
-import telemessage.web.rest.RestField;
+
+import com.mikerusoft.jsonable.annotations.JsonClass;
+import com.mikerusoft.jsonable.annotations.JsonField;
 
 /**
  * @author Grinfeld Mikhail
  * @since Feb 28, 2010 11:53:21 AM
  */
-@RestClass
+@JsonClass
 public class Message {
-    @RestField private String textMessage;
-    @RestField private FileMessage[] fileMessages;
-    @RestField private Property[] properties;
-    @RestField private Recipient[] recipients;
-    @RestField private String subject;
-    @RestField private Schedule schedule;
+    @JsonField private String textMessage;
+    @JsonField private FileMessage[] fileMessages;
+    @JsonField private Property[] properties;
+    @JsonField private Recipient[] recipients;
+    @JsonField private String subject;
+    @JsonField private Schedule schedule;
 
     public String getTextMessage() { return textMessage; }
     public void setTextMessage(String textMessage) { this.textMessage = textMessage; }

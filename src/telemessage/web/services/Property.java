@@ -1,7 +1,8 @@
 package telemessage.web.services;
 
-import telemessage.web.rest.RestClass;
-import telemessage.web.rest.RestField;
+
+import com.mikerusoft.jsonable.annotations.JsonClass;
+import com.mikerusoft.jsonable.annotations.JsonField;
 
 /**
  * This class is like PropertyMessage,
@@ -9,10 +10,10 @@ import telemessage.web.rest.RestField;
  * @author Grinfeld Mikhail
  * @since Feb 25, 2010 6:18:41 PM
  */
-@RestClass
+@JsonClass
 public class Property {
-    @RestField private String name;
-    @RestField private String value;
+    @JsonField private String name;
+    @JsonField private String value;
 
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }

@@ -16,7 +16,7 @@ public class QueryStatusExample {
             Sender s = new SenderServiceLocator().gettelemessage();
             AuthenticationDetails a = new AuthenticationDetails("password","john_donne");
             // message id and message key received by sending message
-            StatusMessageResponse sr = s.queryStatus(a, 353381235, "731815630040821905088475443889");
+            StatusMessageResponse sr = s.queryStatus(a, 6707, "046527383931461541589632292670");
             System.out.println("result status: " + sr.getResultCode());
             if (sr.getResultCode() == 0 || sr.getResultCode() == 100) {
                 for (RecipientStatus rt : sr.getRecipients()) {

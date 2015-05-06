@@ -1,16 +1,16 @@
 package telemessage.web.services;
 
-import telemessage.web.rest.RestClass;
-import telemessage.web.rest.RestField;
+import com.mikerusoft.jsonable.annotations.JsonClass;
+import com.mikerusoft.jsonable.annotations.JsonField;
 
 /**
  * @author mikhail
  * @since Feb 25, 2010 3:43:12 PM
  */
-@RestClass
+@JsonClass
 public class AuthenticationDetails {
-    @RestField private String username;
-    @RestField private String password;
+    @JsonField private String username;
+    @JsonField private String password;
 
     public AuthenticationDetails() {
     }

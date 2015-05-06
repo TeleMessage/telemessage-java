@@ -1,13 +1,14 @@
 package telemessage.web.services;
 
-import telemessage.web.rest.RestClass;
-import telemessage.web.rest.RestField;
+
+import com.mikerusoft.jsonable.annotations.JsonClass;
+import com.mikerusoft.jsonable.annotations.JsonField;
 
 /**
  * @author Grinfeld Mikhail
  * @since Feb 25, 2010 6:32:41 PM
  */
-@RestClass
+@JsonClass
 public class Recipient {
 
     public enum Type {
@@ -34,14 +35,14 @@ public class Recipient {
         }
     }
 
-    @RestField private String value;
+    @JsonField private String value;
     /**
      * defines destination type
      */
-    @RestField private String type;
+    @JsonField private String type;
     // currently supported only value 0. For future use.
-    @RestField private int addresType = 0;
-    @RestField private String description;
+    @JsonField private int addresType = 0;
+    @JsonField private String description;
 
     public Recipient() {}
 

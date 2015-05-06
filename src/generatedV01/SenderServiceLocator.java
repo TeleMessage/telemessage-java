@@ -22,7 +22,7 @@ public class SenderServiceLocator extends org.apache.axis.client.Service impleme
     }
 
     // Use to get a proxy class for telemessagesingle
-    private java.lang.String telemessagesingle_address = "http://rndtc:8080/services/telemessagesingle";
+    private java.lang.String telemessagesingle_address = "https://secure.telemessage.com/services/telemessagesingle";
 
     public java.lang.String gettelemessagesingleAddress() {
         return telemessagesingle_address;

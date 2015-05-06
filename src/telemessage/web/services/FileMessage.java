@@ -1,25 +1,26 @@
 package telemessage.web.services;
 
-import telemessage.web.rest.RestClass;
-import telemessage.web.rest.RestField;
+
+import com.mikerusoft.jsonable.annotations.JsonClass;
+import com.mikerusoft.jsonable.annotations.JsonField;
 
 /**
  * @author Grinfeld Mikhail
  * @since Feb 25, 2010 6:14:06 PM
  */
-@RestClass
+@JsonClass
 public class FileMessage {
 
-    @RestField private String fileName;
-    @RestField private String mimeType;
+    @JsonField private String fileName;
+    @JsonField private String mimeType;
 
     /**
      * only if type == FILE_DATA data stored in value
      */
-    @RestField private String value;
+    @JsonField private String value;
 
     // field for future use. Now supported only 0 - so we don't expose it
-    @RestField private int type = 0;
+    @JsonField private int type = 0;
 
     public FileMessage(){}
 

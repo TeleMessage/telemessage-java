@@ -8,5 +8,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/jackson-core-2.2.3"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/commons-io-2.4"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/wsdl4j-1.5.1"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/axis-ant"/>
 	<classpathentry kind="output" path="out/production/TMSender"/>
 </classpath>

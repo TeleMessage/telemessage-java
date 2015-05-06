@@ -228,7 +228,7 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
 
       <wsdl:port binding="impl:telemessagesingleSoapBinding" name="telemessagesingle">
 
-         <wsdlsoap:address location="http://rndtc/services/telemessagesingle"/>
+         <wsdlsoap:address location="https://secure.telemessage.com/services/telemessagesingle"/>
 
       </wsdl:port>
 

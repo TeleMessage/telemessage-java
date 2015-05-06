@@ -17,7 +17,7 @@ public class FileMessageExample {
                 AuthenticationDetails a = new AuthenticationDetails("password","john_donne");
                 Message m = new Message();
                 Recipient r = new Recipient();
-                r.setValue("+1xxxxxxxxxx");
+                r.setValue("+1xxxxxxxxx");
                 r.setType("FAX");
                 m.setTextMessage("Hello");
                 m.setRecipients(new Recipient[] {r});

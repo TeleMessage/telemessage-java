@@ -28,7 +28,7 @@ public class HttpPostQueryStatusExample {
             CloseableHttpClient httpclient = HttpClients.createDefault();
             HttpPost httppost = new HttpPost(tm.getStatusURL(TeleMessage.Interface.JSON));
             ByteArrayOutputStream by = new ByteArrayOutputStream();
-            tm.writeQueryStatus("john_donne", "password", 353381226, "731815630040821905088475443869", TeleMessage.Interface.JSON, by);
+            tm.writeQueryStatus("john_donne", "password", 6705, "346840808935768533461928966631", TeleMessage.Interface.JSON, by);
 
             ByteArrayEntity entity = new ByteArrayEntity(by.toByteArray(), ContentType.create("application/json", "UTF-8"));
             httppost.setEntity(entity);

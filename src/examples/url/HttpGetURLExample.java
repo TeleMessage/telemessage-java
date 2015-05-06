@@ -19,11 +19,11 @@ public class HttpGetURLExample {
         TeleMessage tm = new TeleMessage();
         tm.setSubject("Hello World");
         tm.setText("SEND TO URL sample");
-        tm.addRecipient(new Recipient("+1xxxxxxxxxx", "SMS", null));
+        tm.addRecipient(new Recipient("+1xxxxxxxxx", "SMS", null));
         
         try {
 
-            URLResult res = (URLResult)tm.writeSend("xxxxxxxxxxxx", "xxxxxxxx", TeleMessage.Interface.SEND_TO_URL, null);
+            URLResult res = (URLResult)tm.writeSend("john_donne", "password", TeleMessage.Interface.SEND_TO_URL, null);
 
             RequestBuilder builder = RequestBuilder.get().setUri(tm.getSendURL(TeleMessage.Interface.SEND_TO_URL));
             if (res.getParams() != null) {

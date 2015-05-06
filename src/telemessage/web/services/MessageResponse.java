@@ -1,19 +1,19 @@
 package telemessage.web.services;
 
 
-import telemessage.web.rest.RestClass;
-import telemessage.web.rest.RestField;
+import com.mikerusoft.jsonable.annotations.JsonClass;
+import com.mikerusoft.jsonable.annotations.JsonField;
 
 /**
  * TeleMessage Response for sending messages
  * @author Grinfeld Mikhail
  * @since Feb 28, 2010 11:45:17 AM
  */
-@RestClass
+@JsonClass
 public class MessageResponse extends Response {
 
-    @RestField private long messageID;
-    @RestField private String messageKey;
+    @JsonField private long messageID;
+    @JsonField private String messageKey;
 
     public MessageResponse(int resultCode, String resultDescription, long messageID, String messageKey) {
         super(resultCode, resultDescription);

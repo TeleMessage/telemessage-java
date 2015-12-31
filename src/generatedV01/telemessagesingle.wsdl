@@ -121,6 +121,7 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
      <extension base="impl:MessageResponse">
       <sequence>
        <element name="description" nillable="true" type="xsd:string"/>
+       <element name="duration" type="xsd:int"/>
        <element name="status" type="xsd:int"/>
        <element name="statusDate" type="xsd:long"/>
       </sequence>

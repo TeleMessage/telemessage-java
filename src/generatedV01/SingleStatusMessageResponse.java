@@ -10,6 +10,8 @@ package generatedV01;
 public class SingleStatusMessageResponse  extends generatedV01.MessageResponse  implements java.io.Serializable {
     private java.lang.String description;
 
+    private int duration;
+
     private int status;
 
     private long statusDate;
@@ -24,6 +26,7 @@ public class SingleStatusMessageResponse  extends generatedV01.MessageResponse  
            long messageID,
            java.lang.String messageKey,
            java.lang.String description,
+           int duration,
            int status,
            long statusDate) {
         super(
@@ -33,6 +36,7 @@ public class SingleStatusMessageResponse  extends generatedV01.MessageResponse  
             messageID,
             messageKey);
         this.description = description;
+        this.duration = duration;
         this.status = status;
         this.statusDate = statusDate;
     }
@@ -55,6 +59,26 @@ public class SingleStatusMessageResponse  extends generatedV01.MessageResponse  
      */
     public void setDescription(java.lang.String description) {
         this.description = description;
+    }
+
+
+    /**
+     * Gets the duration value for this SingleStatusMessageResponse.
+     * 
+     * @return duration
+     */
+    public int getDuration() {
+        return duration;
+    }
+
+
+    /**
+     * Sets the duration value for this SingleStatusMessageResponse.
+     * 
+     * @param duration
+     */
+    public void setDuration(int duration) {
+        this.duration = duration;
     }
 
 
@@ -112,6 +136,7 @@ public class SingleStatusMessageResponse  extends generatedV01.MessageResponse  
             ((this.description==null && other.getDescription()==null) || 
              (this.description!=null &&
               this.description.equals(other.getDescription()))) &&
+            this.duration == other.getDuration() &&
             this.status == other.getStatus() &&
             this.statusDate == other.getStatusDate();
         __equalsCalc = null;
@@ -128,6 +153,7 @@ public class SingleStatusMessageResponse  extends generatedV01.MessageResponse  
         if (getDescription() != null) {
             _hashCode += getDescription().hashCode();
         }
+        _hashCode += getDuration();
         _hashCode += getStatus();
         _hashCode += new Long(getStatusDate()).hashCode();
         __hashCodeCalc = false;
@@ -145,6 +171,12 @@ public class SingleStatusMessageResponse  extends generatedV01.MessageResponse  
         elemField.setXmlName(new javax.xml.namespace.QName("", "description"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
         elemField.setNillable(true);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("duration");
+        elemField.setXmlName(new javax.xml.namespace.QName("", "duration"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "int"));
+        elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
         elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("status");

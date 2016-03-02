@@ -2,6 +2,7 @@ package telemessage.converters.xml;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.simpleframework.xml.Element;
+import org.simpleframework.xml.Root;
 import telemessage.web.services.Property;
 
 public class PropertyConverter implements XMLConverter<PropertyConverter.PropertyMessage> {
@@ -19,7 +20,7 @@ public class PropertyConverter implements XMLConverter<PropertyConverter.Propert
         return null;
     }
 
-
+    @Root(name = "PROPERTY_MESSAGE")
     static class PropertyMessage {
 
         PropertyMessage(int messageIndex, String propertyName, String propertyValue) {
